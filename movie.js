@@ -17,10 +17,33 @@ movieServer.get('/info', (req,response) => {
     response.send("To fetch all movies, useGET /,movies. To add a new movie, use POST /movies. To update or delete a movie, use PUT or DELETE on /movies/:id respectively.")
 });
 
-movieServer.get('movies/:id', (req, response) => {
-    response.send(movies)
+movieServer.get('/movies', (req, response) => {
+    response.json(movies)
 });
 
-movieServer.delete('movies/:id', (req, res) => {
-    movies.pop(req.params.id)
-})
+movieServer.get('/movies/:id', (req, response) => {
+    const movieId = parseInt(req.params.id);
+    const movie = movies.find(movie => movie.id === movieId);
+
+    if (movie) {
+        response.json(movie);
+    } else {
+        response.status(404).send('Movie not found');
+    }
+});
+
+movieServer.delete('/movies/:id', (req, response) => {
+    const movieId = parseInt(req.params.id);
+    const index = movies.findIndex(movie => movie.id === movieId);
+
+    if (index !== -1) {
+        movies.splice(index, 1);
+        response.send(`Movie with ID ${movieId} has been deleted.`);
+    } else {
+        response.status(404).send('Movie not found');
+    }
+});
+
+movieServer.listen(3000, () => {
+    console.log('Server is listening on port 3000')
+});
